@@ -1,9 +1,9 @@
 {
-	"name": "pipeline1",
+	"name": "LoadADLStoSQLwithexcelsheetname",
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
+				"name": "getmetadata",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -33,7 +33,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "getmetadata",
 						"dependencyConditions": [
 							"Succeeded"
 						]
