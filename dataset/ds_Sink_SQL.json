@@ -1,0 +1,25 @@
+{
+	"name": "ds_Sink_SQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_SQL_excel_Schema_07",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "MultipleSheets",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
