@@ -1,0 +1,16 @@
+{
+	"name": "ds_scdtype1_SQltable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_scdtype_SQl_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimCustomer"
+		}
+	}
+}
