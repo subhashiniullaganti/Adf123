@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "Scdtype2dataflow2",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,10 +10,21 @@
 						"type": "DatasetReference"
 					},
 					"name": "Source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_Scdtype2_targetday2",
+						"type": "DatasetReference"
+					},
+					"name": "target"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          user_id as string,",
@@ -24,7 +35,19 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> Source1"
+				"     ignoreNoFilesFound: false) ~> Source1",
+				"source(output(",
+				"          user_id as string,",
+				"          subscription as string,",
+				"          price as string,",
+				"          location as string,",
+				"          pincode as string,",
+				"          isactive as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> target",
+				"Source1 derive() ~> derivedColumn1"
 			]
 		}
 	}
