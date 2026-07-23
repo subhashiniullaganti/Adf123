@@ -1,0 +1,30 @@
+{
+	"name": "trigger_thum",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "thumtrigger",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"Parameter_start_date": "@trigger().outputs.windowStartTime",
+				"Parameter_end_date": "@trigger().outputs.windowEndTime"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Hour",
+			"interval": 1,
+			"startTime": "2026-07-23T20:00:00Z",
+			"endTime": "2026-07-27T20:00:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}

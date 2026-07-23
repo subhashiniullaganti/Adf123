@@ -1,0 +1,24 @@
+{
+	"name": "AzureSqlDatabase",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "retail-dev-server123.database.windows.net",
+			"database": "free-sql-db-9875301",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "myuser",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault3",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "dbsqlsecret"
+			}
+		}
+	}
+}
