@@ -1,0 +1,39 @@
+{
+	"name": "ds_Adls_jsonincrementaldata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_Adls_jsonincrementaldata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Order.json",
+				"folderPath": "jsondata",
+				"fileSystem": "orderjsondata"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"OrderID": {
+					"type": "integer"
+				},
+				"CustomerID": {
+					"type": "string"
+				},
+				"OrderDate": {
+					"type": "string"
+				},
+				"UpdatedDate": {
+					"type": "string"
+				},
+				"Amount": {
+					"type": "number"
+				}
+			}
+		}
+	}
+}
