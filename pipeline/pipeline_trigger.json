@@ -1,0 +1,60 @@
+{
+	"name": "pipeline_trigger",
+	"properties": {
+		"activities": [
+			{
+				"name": "Capture Trigger Start time",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_start_time",
+					"value": {
+						"value": "@pipeline().parameters.start_time_trigger_para",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Capture Trigger End time",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_end_time",
+					"value": {
+						"value": "@pipeline().parameters.end_time_trigger_para",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"start_time_trigger_para": {
+				"type": "string"
+			},
+			"end_time_trigger_para": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"var_start_time": {
+				"type": "String"
+			},
+			"var_end_time": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-07-23T03:49:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
