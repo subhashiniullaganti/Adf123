@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "Scdtype0229july",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
