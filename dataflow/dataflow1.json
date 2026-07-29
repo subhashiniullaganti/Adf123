@@ -1,0 +1,155 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_Scdtype2_Adls",
+						"type": "DatasetReference"
+					},
+					"name": "AdlsSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_Scdtype2_target_Adls",
+						"type": "DatasetReference"
+					},
+					"name": "targetAdls"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_Scdtype2_target_Adls",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_Scdtype2_target_Adls",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SourceHashColumn"
+				},
+				{
+					"name": "TargetHashcolumn"
+				},
+				{
+					"name": "exists1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "exists2"
+				},
+				{
+					"name": "exists3"
+				},
+				{
+					"name": "isinactive"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          user_id as string,",
+				"          subscription as string,",
+				"          price as string,",
+				"          location as string,",
+				"          pincode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> AdlsSource",
+				"source(output(",
+				"          user_id as string,",
+				"          subscription as string,",
+				"          price as string,",
+				"          location as string,",
+				"          pincode as string,",
+				"          isactive as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> targetAdls",
+				"AdlsSource derive(Sourcehashcolumn = md5(user_id,subscription,price,location,pincode)) ~> SourceHashColumn",
+				"targetAdls derive(TargetSourceColumn = md5(user_id,subscription,price,location,pincode)) ~> TargetHashcolumn",
+				"SourceHashColumn, TargetHashcolumn exists(Sourcehashcolumn == TargetSourceColumn,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists1",
+				"exists1 derive(isactive = 1) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          user_id,",
+				"          subscription,",
+				"          price,",
+				"          location,",
+				"          pincode,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"TargetHashcolumn, SourceHashColumn exists(targetAdls@user_id == AdlsSource@user_id,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists2",
+				"exists2, SourceHashColumn exists(TargetSourceColumn == Sourcehashcolumn,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists3",
+				"exists3 derive(isactive = 0) ~> isinactive",
+				"isinactive select(mapColumn(",
+				"          user_id,",
+				"          subscription,",
+				"          price,",
+				"          location,",
+				"          pincode,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          user_id as string,",
+				"          subscription as string,",
+				"          price as string,",
+				"          location as string,",
+				"          pincode as string,",
+				"          isactive as string",
+				"     ),",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          user_id as string,",
+				"          subscription as string,",
+				"          price as string,",
+				"          location as string,",
+				"          pincode as string,",
+				"          isactive as string",
+				"     ),",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}
