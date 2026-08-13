@@ -1,0 +1,31 @@
+{
+	"name": "ds_Adls_excel_multiplesheets_07",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Ls_Adls_excel_multiplesheets_07",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sheetname": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": {
+				"value": "@dataset().sheetname",
+				"type": "Expression"
+			},
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Sample_Data_Customers_Products_Orders.xlsx",
+				"folderPath": "raw",
+				"fileSystem": "retail"
+			},
+			"firstRowAsHeader": false
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

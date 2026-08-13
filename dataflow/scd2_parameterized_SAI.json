@@ -1,0 +1,176 @@
+{
+	"name": "scd2_parameterized_SAI",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Azuresqldatabase",
+						"type": "DatasetReference"
+					},
+					"name": "source"
+				},
+				{
+					"dataset": {
+						"referenceName": "Azuresqldatabase",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Azuresqldatabase",
+						"type": "DatasetReference"
+					},
+					"name": "sinkInsert"
+				},
+				{
+					"dataset": {
+						"referenceName": "Azuresqldatabase",
+						"type": "DatasetReference"
+					},
+					"name": "Delete"
+				},
+				{
+					"dataset": {
+						"referenceName": "Azuresqldatabase",
+						"type": "DatasetReference"
+					},
+					"name": "Update"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ifDoesntexists"
+				},
+				{
+					"name": "SetActiveDerivedColumns"
+				},
+				{
+					"name": "SetInActiveDerivedColumns"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "filterCurrentFlag"
+				},
+				{
+					"name": "sourcehash"
+				},
+				{
+					"name": "sinkhash"
+				},
+				{
+					"name": "deletes"
+				},
+				{
+					"name": "setInActive"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "sinkhashpk"
+				},
+				{
+					"name": "sourcehashpk"
+				},
+				{
+					"name": "updateexists"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     s_attributes as string,",
+				"     t_attributes as string,",
+				"     s_primary_key as integer,",
+				"     t_primary_key as integer,",
+				"     CurrentFlag as integer,",
+				"     p_array as string",
+				"}",
+				"source(output(",
+				"          BusinessEntityID as integer,",
+				"          departmentid as integer,",
+				"          ShiftID as integer,",
+				"          JobCandidateID as integer,",
+				"          CurrentFlag as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source",
+				"source(output(",
+				"          BusinessEntityID as integer,",
+				"          departmentid as integer,",
+				"          ShiftID as integer,",
+				"          JobCandidateID as integer,",
+				"          CurrentFlag as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sink",
+				"sourcehashpk, sinkhashpk exists(Hash_Source == sink_hash,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> ifDoesntexists",
+				"ifDoesntexists derive(CurrentFlag = 1,",
+				"          EffectiveStartDate = toDate(currentUTC()),",
+				"          EffectiveEndDate = toDate('9999-01-01')) ~> SetActiveDerivedColumns",
+				"updateexists derive(CurrentFlag = 0,",
+				"          EffectiveEndDate = toDate(currentUTC()),",
+				"          primarykey = $t_primary_key) ~> SetInActiveDerivedColumns",
+				"SetInActiveDerivedColumns alterRow(updateIf(true())) ~> alterRowUpdate",
+				"sink filter($CurrentFlag== 1) ~> filterCurrentFlag",
+				"source derive(Hash_Source = md5(byNames(split($s_attributes,',')))) ~> sourcehash",
+				"filterCurrentFlag derive(sink_hash = md5(byNames(split($t_attributes,',')))) ~> sinkhash",
+				"sinkhashpk, sourcehashpk exists(tpk == spk,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> deletes",
+				"deletes derive(CurrentFlag = 0,",
+				"          EffectiveEndDate = toDate(currentUTC())) ~> setInActive",
+				"setInActive alterRow(updateIf(true())) ~> alterRow1",
+				"sinkhash derive(tpk = $s_primary_key) ~> sinkhashpk",
+				"sourcehash derive(spk = $s_primary_key) ~> sourcehashpk",
+				"sinkhashpk, SetActiveDerivedColumns exists(spk == tpk,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> updateexists",
+				"SetActiveDerivedColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkInsert",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:(split($p_array, ',')),",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> Delete",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:(split($p_array, ',')),",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> Update"
+			]
+		}
+	}
+}
